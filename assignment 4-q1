@@ -1,0 +1,79 @@
+import java.util.Scanner;
+
+public class Main {
+
+    private static boolean triangle(String[] crops, int i, int j) {
+        if(i+1< crops.length)
+            if(crops[i].charAt(j) == crops[i + 1].charAt(j))
+                if(j+1<crops[0].length())
+                    if(crops[i].charAt(j) == crops[i].charAt(j + 1))
+                        return true;
+        return false;
+    }
+
+    private static boolean validate(String[] crops, char ch, int i, int j) {
+        boolean up = true, bottom = true, right = true, left = true;
+        if (i - 1 >= 0)
+            left = (ch != crops[i - 1].charAt(j));
+        if (j - 1 >= 0)
+            up = (ch != crops[i].charAt(j - 1));
+        if (i + 1 < crops.length)
+            bottom = ch != (crops[i + 1].charAt(j));
+        if (j + 1 < crops[0].length())
+            right = ch != (crops[i].charAt(j + 1));
+        return up && bottom && right && left;
+    }
+
+    private static char possibilities(String[] crops, int i, int j) {
+        for (char a = 'a'; a <= 'z'; a++) {
+            if (validate(crops, a, i, j)) return a;
+        }
+        return '*';
+    }
+
+    private static boolean irregular(String[] crops, int i, int j) {
+        boolean up = false, left = false;
+        if (i - 1 >= 0) left = (crops[i].charAt(j) == crops[i - 1].charAt(j));
+        if (j - 1 >= 0) up = (crops[i].charAt(j) == crops[i].charAt(j - 1));
+        return up || left;
+    }
+
+    public static void main(String[] args) {
+        int n;
+        Scanner in = new Scanner(System.in);
+        n = in.nextInt();
+        in.nextLine();
+        String[] crops = new String[n];
+        for (int i = 0; i < n; i++) {
+            crops[i] = in.nextLine().trim();
+        }
+
+        System.out.print(replant(crops));
+
+    }
+    public static int replant(String[] crops) {
+        int n=crops.length;
+        String[] extra = new String[n];
+        if (n >= 0) System.arraycopy(crops, 0, extra, 0, n);
+        int c1 = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < crops[0].length(); j++) {
+                if (irregular(crops, i, j)) {
+                    crops[i] = crops[i].substring(0, j) + possibilities(crops, i, j) + crops[i].substring(j + 1);
+                    c1++;
+                }
+            }
+        }
+        int c2 = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < extra[0].length(); j++) {
+                if (irregular(extra, i, j) || triangle(extra, i, j)) {
+                    extra[i] = extra[i].substring(0, j) + possibilities(extra, i, j) + extra[i].substring(j + 1);
+                    c2++;
+                }
+            }
+        }
+        return Math.min(c1, c2);
+    }
+
+}
